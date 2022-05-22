@@ -23,8 +23,11 @@ include    include/kernel.inc
 
            ; VDP port assignments
 
-#define    VDPREG 5
-#define    VDPRAM 1
+#define    EXP_PORT  1
+#define    VDP_GROUP 1
+
+#define    VDPRAM 6
+#define    VDPREG 7
 
 #define    RDRAM 00h
 #define    WRRAM 40h
@@ -54,12 +57,12 @@ start:     org     2000h
 
            ; Build information
 
-           db      2+80h              ; month
-           db      28                 ; day
+           db      5+80h              ; month
+           db      20                 ; day
            dw      2022               ; year
-           dw      1                  ; build
+           dw      2                  ; build
 
-           db      'See github.com/dmadole/Elfos-xlife for more info',0
+           db      'See github.com/dmadole/Elfos-kaleido for more info',0
 
 
            ; Initialize 9918 registers to multicolor mode. We blank the display
@@ -69,6 +72,10 @@ start:     org     2000h
 
 main:      sex     r3
 
+#ifdef EXP_PORT
+           out     EXP_PORT
+           db      VDP_GROUP
+#endif
            out     VDPREG
            db      088h                ; 16k=1, blank=0, m1=0, m2=1
            out     VDPREG
@@ -326,6 +333,10 @@ exit:      sex     r3
 
 wait:      b4      wait
 
+#ifdef EXP_PORT
+           out     EXP_PORT
+           db      0
+#endif
            sep     r5
 
 A007A:     inp     VDPRAM
